@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pixel Text Generator</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Pixelify+Sans&family=Silkscreen&display=swap" as="style">
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Pixelify+Sans&family=Silkscreen&display=swap" rel="stylesheet">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Pixelify+Sans&family=Silkscreen&family=Orbitron&family=Bungee&family=Audiowide&family=Geo&family=Changa&display=swap" as="style">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Pixelify+Sans&family=Silkscreen&family=Orbitron&family=Bungee&family=Audiowide&family=Geo&family=Changa&display=swap" rel="stylesheet">
 </head>
 <body>
     <h1>Pixel Text Generator</h1>
@@ -19,6 +19,25 @@
             <label><input type="checkbox" name="font" value="VT323"> VT323</label>
             <label><input type="checkbox" name="font" value="Pixelify Sans"> Pixelify Sans</label>
             <label><input type="checkbox" name="font" value="Silkscreen"> Silkscreen</label>
+        </div>
+        <div class="swap-options">
+            <select id="newFontDropdown">
+                <option value="">Swap with New Font</option>
+                <option value="Orbitron">Orbitron</option>
+                <option value="Bungee">Bungee</option>
+                <option value="Audiowide">Audiowide</option>
+                <option value="Geo">Geo</option>
+                <option value="Changa">Changa</option>
+            </select>
+            <button onclick="swapWithNewFont()">Swap</button>
+            <select id="favoriteFontDropdown">
+                <option value="">Swap Back to Favorite</option>
+            </select>
+            <button onclick="swapWithFavoriteFont()">Swap Back</button>
+        </div>
+        <div class="custom-font">
+            <input type="text" id="customFontInput" placeholder="Enter font name or URL">
+            <button onclick="addCustomFont()">Add Custom Font</button>
         </div>
         <button onclick="generateText()">Generate</button>
         <canvas id="textCanvas" width="800" height="600"></canvas>
