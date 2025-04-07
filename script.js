@@ -1,7 +1,25 @@
+// Preload fonts by rendering them off-screen
+function preloadFonts() {
+    const offscreenCanvas = document.createElement('canvas');
+    offscreenCanvas.width = 1;
+    offscreenCanvas.height = 1;
+    const ctx = offscreenCanvas.getContext('2d');
+    const fonts = ["Monospace", "Press Start 2P", "VT323", "Pixelify Sans", "Silkscreen"];
+    fonts.forEach(font => {
+        ctx.font = `60px "${font}"`;
+        ctx.fillText("preload", 0, 0); // Force font to load
+    });
+}
+
+// Run preloading when the page loads
+window.onload = function() {
+    preloadFonts();
+};
+
 function generateText() {
     const canvas = document.getElementById('textCanvas');
     const ctx = canvas.getContext('2d');
-    const userText = document.getElementById('userInput').value; // Removed .toUpperCase()
+    const userText = document.getElementById('userInput').value;
     const selectedColor = document.getElementById('colorPicker').value;
 
     // Get selected fonts
