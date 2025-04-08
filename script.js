@@ -5,7 +5,6 @@ const fontSizeAdjustments = {
     "Press Start 2P": 48,
 };
 
-// List of all available fonts (initially the same as in HTML)
 const allFonts = [
     "Monospace", "Press Start 2P", "VT323", "Pixelify Sans", "Silkscreen",
     "Orbitron", "Bungee", "Audiowide", "Geo", "Changa"
@@ -46,7 +45,6 @@ function setupDragAndDrop() {
                     alert("Maximum of 6 fonts allowed in Active Fonts!");
                     return;
                 }
-                // Allow duplicates in Active Fonts
                 const fontItem = document.createElement('div');
                 fontItem.className = 'font-item';
                 fontItem.draggable = true;
@@ -54,7 +52,6 @@ function setupDragAndDrop() {
                 container.appendChild(fontItem);
                 generateText();
             } else if (container.id === 'availableFonts') {
-                // Ensure uniqueness in Available Fonts
                 const existingFonts = Array.from(container.querySelectorAll('.font-item')).map(item => item.textContent);
                 if (!existingFonts.includes(font)) {
                     const fontItem = document.createElement('div');
@@ -65,7 +62,6 @@ function setupDragAndDrop() {
                 }
             }
 
-            // Remove the dragged element if it was moved from Active Fonts to Available Fonts
             const draggedElement = document.querySelector('.dragging');
             if (draggedElement && draggedElement.parentElement.id === 'activeFonts' && container.id === 'availableFonts') {
                 draggedElement.remove();
@@ -195,7 +191,7 @@ function addFontToAvailableBox(font) {
         fontItem.draggable = true;
         fontItem.textContent = font;
         availableBox.appendChild(fontItem);
-        allFonts.push(font); // Add to allFonts for preloading
+        allFonts.push(font);
     }
 }
 

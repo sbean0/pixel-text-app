@@ -3,7 +3,7 @@ window.onload = function() {
     const fonts = urlParams.get('fonts') ? urlParams.get('fonts').split(',') : [];
     const text = urlParams.get('text') || 'Sample Text';
     const color = urlParams.get('color') ? `#${urlParams.get('color')}` : '#000000';
-    const note = urlParams.get('note') || '';
+    const encodedNote = urlParams.get('note') || '';
     const hideNote = urlParams.get('hideNote') === 'true';
 
     const previewDiv = document.getElementById('textPreview');
@@ -12,7 +12,16 @@ window.onload = function() {
     const showFontsBtn = document.getElementById('showFontsBtn');
     let isFontListVisible = false;
     let tapCount = 0;
-    const tapsRequired = 3; // Number of taps to reveal the note
+    const tapsRequired = 3;
+
+    // Decode the Base64-encoded note
+    let note = '';
+    try {
+        note = encodedNote ? atob(decodeURIComponent(encodedNote)) : '';
+    } catch (e) {
+        console.error('Failed to decode note:', e);
+        note = ''; // Fallback to empty string if decoding fails
+    }
 
     // Set the note content
     customNoteDiv.textContent = note ? `Note: ${note}` : '';
@@ -28,7 +37,7 @@ window.onload = function() {
             tapCount++;
             if (tapCount >= tapsRequired) {
                 customNoteDiv.classList.add('visible');
-                tapCount = 0; // Reset tap count after revealing
+                tapCount = 0;
             }
         }
     });
