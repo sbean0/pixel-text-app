@@ -80,7 +80,7 @@ function generateText() {
     const activeFonts = Array.from(document.querySelectorAll('#activeFonts .font-item')).map(item => item.textContent);
 
     if (activeFonts.length === 0) {
-        ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas if no fonts
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
         return;
     }
 
@@ -116,7 +116,7 @@ function generateText() {
     const textParam = encodeURIComponent(userText);
     const colorParam = selectedColor.replace('#', '');
     const baseUrl = `${window.location.origin}${window.location.pathname}`;
-    const qrUrl = `${baseUrl}?fonts=${fontParam}&text=${textParam}&color=${colorParam}`;
+    const qrUrl = `${baseUrl}mobile.html?fonts=${fontParam}&text=${textParam}&color=${colorParam}`;
     const qrCanvas = document.createElement('canvas');
     QRCode.toCanvas(qrCanvas, qrUrl, { width: 100, margin: 1 }, (error) => {
         if (error) console.error(error);
