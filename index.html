@@ -13,36 +13,40 @@
     <div class="container">
         <input type="text" id="userInput" placeholder="Enter your text here" maxlength="20">
         <input type="color" id="colorPicker" value="#000000">
-        <div class="font-options">
-            <label><input type="checkbox" name="font" value="Monospace" checked> Monospace</label>
-            <label><input type="checkbox" name="font" value="Press Start 2P"> Press Start 2P</label>
-            <label><input type="checkbox" name="font" value="VT323"> VT323</label>
-            <label><input type="checkbox" name="font" value="Pixelify Sans"> Pixelify Sans</label>
-            <label><input type="checkbox" name="font" value="Silkscreen"> Silkscreen</label>
-        </div>
-        <div class="swap-options">
-            <select id="newFontDropdown">
-                <option value="">Swap with New Font</option>
-                <option value="Orbitron">Orbitron</option>
-                <option value="Bungee">Bungee</option>
-                <option value="Audiowide">Audiowide</option>
-                <option value="Geo">Geo</option>
-                <option value="Changa">Changa</option>
-            </select>
-            <button onclick="swapWithNewFont()">Swap</button>
-            <select id="favoriteFontDropdown">
-                <option value="">Swap Back to Favorite</option>
-            </select>
-            <button onclick="swapWithFavoriteFont()">Swap Back</button>
-        </div>
         <div class="custom-font">
             <input type="text" id="customFontInput" placeholder="Enter font name or URL">
             <button onclick="addCustomFont()">Add Custom Font</button>
         </div>
+        <div class="options">
+            <label><input type="checkbox" id="showDividers" checked> Show Divider Lines</label>
+        </div>
+        <div class="active-fonts horizontal-box" id="activeFonts">
+            <h3>Active Fonts</h3>
+            <div class="font-item" draggable="true">Monospace</div>
+            <div class="font-item" draggable="true">Press Start 2P</div>
+            <div class="font-item" draggable="true">VT323</div>
+            <div class="font-item" draggable="true">Pixelify Sans</div>
+            <div class="font-item" draggable="true">Silkscreen</div>
+        </div>
+        <div class="font-layout">
+            <div class="new-fonts vertical-box" id="newFonts">
+                <h3>New Fonts</h3>
+                <div class="font-item" draggable="true">Orbitron</div>
+                <div class="font-item" draggable="true">Bungee</div>
+                <div class="font-item" draggable="true">Audiowide</div>
+                <div class="font-item" draggable="true">Geo</div>
+                <div class="font-item" draggable="true">Changa</div>
+            </div>
+            <canvas id="textCanvas" width="800" height="600"></canvas>
+            <div class="favorite-fonts vertical-box" id="favoriteFonts">
+                <h3>Favorite Fonts</h3>
+                <!-- Populated dynamically -->
+            </div>
+        </div>
         <button onclick="generateText()">Generate</button>
-        <canvas id="textCanvas" width="800" height="600"></canvas>
         <button onclick="downloadImage()">Download as PNG</button>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.4.4/build/qrcode.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
