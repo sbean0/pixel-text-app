@@ -75,7 +75,7 @@ input[type="color"] {
 
 .active-fonts.horizontal-box {
     width: 100%;
-    max-width: 800px;
+    max-width: 1000px; /* Match the new canvas width */
     min-height: 100px;
     background-color: #e0e0e0;
     border: 2px solid #ccc;
