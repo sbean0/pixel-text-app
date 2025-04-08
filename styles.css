@@ -2,22 +2,49 @@ body {
     font-family: Arial, sans-serif;
     text-align: center;
     background-color: #f0f0f0;
+    margin: 0;
+    padding: 0;
 }
 
 .container {
     margin: 20px auto;
-    max-width: 1200px; /* Increased to accommodate wider canvas */
+    max-width: 1200px;
+    padding: 0 10px;
+    box-sizing: border-box;
 }
 
 input[type="text"] {
     padding: 10px;
     font-size: 16px;
-    width: 300px;
+    width: 100%;
+    max-width: 300px;
+    box-sizing: border-box;
 }
 
 input[type="color"] {
     vertical-align: middle;
     margin: 0 10px;
+}
+
+.custom-note {
+    margin: 10px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.custom-note input[type="text"] {
+    padding: 10px;
+    font-size: 16px;
+    width: 100%;
+    max-width: 300px;
+    box-sizing: border-box;
+}
+
+.custom-note label {
+    font-size: 16px;
+    white-space: nowrap;
 }
 
 .custom-font {
@@ -27,8 +54,10 @@ input[type="color"] {
 .custom-font input[type="text"] {
     padding: 10px;
     font-size: 16px;
-    width: 400px;
+    width: 100%;
+    max-width: 400px;
     margin-right: 10px;
+    box-sizing: border-box;
 }
 
 .custom-font button {
@@ -36,8 +65,17 @@ input[type="color"] {
     font-size: 14px;
 }
 
+.options {
+    margin: 10px 0;
+}
+
+.options label {
+    font-size: 16px;
+}
+
 .active-fonts.horizontal-box {
-    width: 800px; /* Match canvas width */
+    width: 100%;
+    max-width: 800px;
     min-height: 100px;
     background-color: #e0e0e0;
     border: 2px solid #ccc;
@@ -53,6 +91,7 @@ input[type="color"] {
     justify-content: center;
     align-items: flex-start;
     margin: 20px 0;
+    flex-wrap: wrap;
 }
 
 .vertical-box {
@@ -62,14 +101,11 @@ input[type="color"] {
     border: 2px solid #ccc;
     padding: 10px;
     overflow-y: auto;
+    margin: 10px;
 }
 
-.new-fonts {
+.available-fonts {
     margin-right: 20px;
-}
-
-.favorite-fonts {
-    margin-left: 20px;
 }
 
 .font-item {
@@ -79,6 +115,7 @@ input[type="color"] {
     border: 1px solid #999;
     cursor: move;
     user-select: none;
+    touch-action: none;
 }
 
 .font-item.dragging {
@@ -95,9 +132,60 @@ button {
     font-size: 16px;
     margin: 10px;
     cursor: pointer;
+    touch-action: manipulation;
 }
 
 canvas {
     border: 2px solid #000;
     background-color: #fff;
+    max-width: 100%;
+    height: auto;
+}
+
+@media (max-width: 900px) {
+    .font-layout {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .vertical-box {
+        width: 100%;
+        max-width: 300px;
+        height: 200px;
+        margin: 10px 0;
+    }
+
+    .available-fonts {
+        margin: 0;
+    }
+
+    canvas {
+        width: 100%;
+        max-width: 500px;
+        height: auto;
+    }
+}
+
+@media (max-width: 600px) {
+    h1 {
+        font-size: 1.5em;
+    }
+
+    input[type="text"], .custom-font input[type="text"], .custom-note input[type="text"] {
+        max-width: 100%;
+    }
+
+    .custom-note {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    button {
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+
+    .active-fonts.horizontal-box {
+        max-width: 100%;
+    }
 }

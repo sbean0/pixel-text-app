@@ -17,6 +17,18 @@ h1 {
     margin-bottom: 20px;
 }
 
+.custom-note {
+    margin: 10px 0;
+    font-size: 1em;
+    color: #555;
+    font-style: italic;
+    display: none; /* Hidden by default if hideNote is true */
+}
+
+.custom-note.visible {
+    display: block; /* Shown when revealed */
+}
+
 .text-item {
     margin: 20px 0;
     font-size: 1.2em;
@@ -39,12 +51,16 @@ h1 {
     margin-top: 10px;
     font-size: 1em;
     color: #333;
-    display: none; /* Hidden by default */
+    display: none;
 }
 
 @media (max-width: 600px) {
     h1 {
         font-size: 1.2em;
+    }
+
+    .custom-note {
+        font-size: 0.9em;
     }
 
     .text-item {

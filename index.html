@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pixel Text Generator</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css?v=1.1">
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Pixelify+Sans&family=Silkscreen&family=Orbitron&family=Bungee&family=Audiowide&family=Geo&family=Changa&display=swap" as="style">
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Pixelify+Sans&family=Silkscreen&family=Orbitron&family=Bungee&family=Audiowide&family=Geo&family=Changa&display=swap" rel="stylesheet">
 </head>
@@ -13,6 +13,10 @@
     <div class="container">
         <input type="text" id="userInput" placeholder="Enter your text here" maxlength="20">
         <input type="color" id="colorPicker" value="#000000">
+        <div class="custom-note">
+            <input type="text" id="customNote" placeholder="Enter a short note (max 50 chars)" maxlength="50" title="Note will be visible in the QR code URL">
+            <label><input type="checkbox" id="hideNote"> Hide Note</label>
+        </div>
         <div class="custom-font">
             <input type="text" id="customFontInput" placeholder="Enter font name or URL">
             <button onclick="addCustomFont()">Add Custom Font</button>
@@ -29,24 +33,25 @@
             <div class="font-item" draggable="true">Silkscreen</div>
         </div>
         <div class="font-layout">
-            <div class="new-fonts vertical-box" id="newFonts">
-                <h3>New Fonts</h3>
+            <div class="available-fonts vertical-box" id="availableFonts">
+                <h3>Available Fonts</h3>
+                <div class="font-item" draggable="true">Monospace</div>
+                <div class="font-item" draggable="true">Press Start 2P</div>
+                <div class="font-item" draggable="true">VT323</div>
+                <div class="font-item" draggable="true">Pixelify Sans</div>
+                <div class="font-item" draggable="true">Silkscreen</div>
                 <div class="font-item" draggable="true">Orbitron</div>
                 <div class="font-item" draggable="true">Bungee</div>
                 <div class="font-item" draggable="true">Audiowide</div>
                 <div class="font-item" draggable="true">Geo</div>
                 <div class="font-item" draggable="true">Changa</div>
             </div>
-            <canvas id="textCanvas" width="1000" height="700"></canvas>
-            <div class="favorite-fonts vertical-box" id="favoriteFonts">
-                <h3>Favorite Fonts</h3>
-                <!-- Populated dynamically -->
-            </div>
+            <canvas id="textCanvas" width="800" height="600"></canvas>
         </div>
         <button onclick="generateText()">Generate</button>
         <button onclick="downloadImage()">Download as PNG</button>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.4.4/build/qrcode.min.js"></script>
-    <script src="script.js"></script>
+    <script src="script.js?v=1.1"></script>
 </body>
 </html>

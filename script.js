@@ -1,25 +1,23 @@
 const originalFavorites = ["Monospace", "Press Start 2P", "VT323", "Pixelify Sans", "Silkscreen"];
 let swappedOutFavorites = [];
 
-// Font size adjustments to normalize visual size
 const fontSizeAdjustments = {
-    "Press Start 2P": 48, // Reduce size for Press Start 2P to match others
-    // Add more adjustments if needed, e.g.:
-    // "VT323": 58,
-    // "Pixelify Sans": 62,
+    "Press Start 2P": 48,
 };
+
+// List of all available fonts (initially the same as in HTML)
+const allFonts = [
+    "Monospace", "Press Start 2P", "VT323", "Pixelify Sans", "Silkscreen",
+    "Orbitron", "Bungee", "Audiowide", "Geo", "Changa"
+];
 
 function preloadFonts() {
     const offscreenCanvas = document.createElement('canvas');
     offscreenCanvas.width = 1;
     offscreenCanvas.height = 1;
     const ctx = offscreenCanvas.getContext('2d');
-    const fonts = [
-        "Monospace", "Press Start 2P", "VT323", "Pixelify Sans", "Silkscreen",
-        "Orbitron", "Bungee", "Audiowide", "Geo", "Changa"
-    ];
-    fonts.forEach(font => {
-        const fontSize = fontSizeAdjustments[font] || 60; // Default to 60px if no adjustment
+    allFonts.forEach(font => {
+        const fontSize = fontSizeAdjustments[font] || 60;
         ctx.font = `${fontSize}px "${font}"`;
         ctx.fillText("preload", 0, 0);
     });
@@ -28,15 +26,14 @@ function preloadFonts() {
 window.onload = function() {
     preloadFonts();
     setupDragAndDrop();
-    generateText(); // Initial render
+    generateText();
     
-    // Add real-time toggle for divider lines
     const showDividersCheckbox = document.getElementById('showDividers');
     showDividersCheckbox.addEventListener('change', generateText);
 };
 
 function setupDragAndDrop() {
-    const containers = document.querySelectorAll('.new-fonts, .active-fonts, .favorite-fonts');
+    const containers = document.querySelectorAll('.available-fonts, .active-fonts');
     containers.forEach(container => {
         container.addEventListener('dragover', e => e.preventDefault());
         container.addEventListener('drop', e => {
@@ -49,19 +46,30 @@ function setupDragAndDrop() {
                     alert("Maximum of 6 fonts allowed in Active Fonts!");
                     return;
                 }
+                // Allow duplicates in Active Fonts
+                const fontItem = document.createElement('div');
+                fontItem.className = 'font-item';
+                fontItem.draggable = true;
+                fontItem.textContent = font;
+                container.appendChild(fontItem);
+                generateText();
+            } else if (container.id === 'availableFonts') {
+                // Ensure uniqueness in Available Fonts
+                const existingFonts = Array.from(container.querySelectorAll('.font-item')).map(item => item.textContent);
+                if (!existingFonts.includes(font)) {
+                    const fontItem = document.createElement('div');
+                    fontItem.className = 'font-item';
+                    fontItem.draggable = true;
+                    fontItem.textContent = font;
+                    container.appendChild(fontItem);
+                }
             }
 
-            const fontItem = document.createElement('div');
-            fontItem.className = 'font-item';
-            fontItem.draggable = true;
-            fontItem.textContent = font;
-            container.appendChild(fontItem);
+            // Remove the dragged element if it was moved from Active Fonts to Available Fonts
             const draggedElement = document.querySelector('.dragging');
-            if (draggedElement) draggedElement.remove();
-            if (container.id === 'favoriteFonts' && originalFavorites.includes(font) && !swappedOutFavorites.includes(font)) {
-                swappedOutFavorites.push(font);
+            if (draggedElement && draggedElement.parentElement.id === 'activeFonts' && container.id === 'availableFonts') {
+                draggedElement.remove();
             }
-            if (container.id === 'activeFonts') generateText();
         });
     });
 
@@ -84,6 +92,8 @@ function generateText() {
     const ctx = canvas.getContext('2d');
     const userText = document.getElementById('userInput').value;
     const selectedColor = document.getElementById('colorPicker').value;
+    const customNote = document.getElementById('customNote').value;
+    const hideNote = document.getElementById('hideNote').checked;
     const showDividers = document.getElementById('showDividers').checked;
 
     const activeFonts = Array.from(document.querySelectorAll('#activeFonts .font-item')).map(item => item.textContent);
@@ -99,7 +109,7 @@ function generateText() {
     const sectionHeight = textAreaHeight / activeFonts.length;
 
     activeFonts.forEach((font, index) => {
-        const fontSize = fontSizeAdjustments[font] || 60; // Use adjusted size or default to 60px
+        const fontSize = fontSizeAdjustments[font] || 60;
         ctx.font = `${fontSize}px "${font}"`;
         ctx.imageSmoothingEnabled = false;
         ctx.fillStyle = selectedColor;
@@ -125,8 +135,10 @@ function generateText() {
     const fontParam = encodeURIComponent(activeFonts.join(','));
     const textParam = encodeURIComponent(userText);
     const colorParam = selectedColor.replace('#', '');
+    const noteParam = customNote ? encodeURIComponent(btoa(customNote)) : '';
+    const hideNoteParam = hideNote ? 'true' : 'false';
     const baseUrl = `${window.location.origin}${window.location.pathname}`;
-    const qrUrl = `${baseUrl}mobile.html?fonts=${fontParam}&text=${textParam}&color=${colorParam}`;
+    const qrUrl = `${baseUrl}mobile.html?fonts=${fontParam}&text=${textParam}&color=${colorParam}¬e=${noteParam}&hideNote=${hideNoteParam}`;
     const qrCanvas = document.createElement('canvas');
     QRCode.toCanvas(qrCanvas, qrUrl, { 
         width: 100, 
@@ -148,9 +160,10 @@ function addCustomFont() {
         return;
     }
 
+    const availableBox = document.getElementById('availableFonts');
     const activeBox = document.getElementById('activeFonts');
-    const currentFonts = activeBox.querySelectorAll('.font-item').length;
-    if (currentFonts >= 6) {
+    const currentActiveFonts = activeBox.querySelectorAll('.font-item').length;
+    if (currentActiveFonts >= 6) {
         alert("Maximum of 6 fonts allowed in Active Fonts! Remove one first.");
         return;
     }
@@ -160,15 +173,30 @@ function addCustomFont() {
         const fontFace = new FontFace(fontName, `url(${customFontInput})`);
         fontFace.load().then(loadedFont => {
             document.fonts.add(loadedFont);
+            addFontToAvailableBox(fontName);
             addFontToBox(activeBox, fontName);
         }).catch(err => {
             alert("Failed to load font from URL: " + err.message);
         });
     } else {
+        addFontToAvailableBox(customFontInput);
         addFontToBox(activeBox, customFontInput);
     }
 
     document.getElementById('customFontInput').value = '';
+}
+
+function addFontToAvailableBox(font) {
+    const availableBox = document.getElementById('availableFonts');
+    const existingFonts = Array.from(availableBox.querySelectorAll('.font-item')).map(item => item.textContent);
+    if (!existingFonts.includes(font)) {
+        const fontItem = document.createElement('div');
+        fontItem.className = 'font-item';
+        fontItem.draggable = true;
+        fontItem.textContent = font;
+        availableBox.appendChild(fontItem);
+        allFonts.push(font); // Add to allFonts for preloading
+    }
 }
 
 function addFontToBox(box, font) {
