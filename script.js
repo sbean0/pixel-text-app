@@ -1,6 +1,14 @@
 const originalFavorites = ["Monospace", "Press Start 2P", "VT323", "Pixelify Sans", "Silkscreen"];
 let swappedOutFavorites = [];
 
+// Font size adjustments to normalize visual size
+const fontSizeAdjustments = {
+    "Press Start 2P": 48, // Reduce size for Press Start 2P to match others
+    // Add more adjustments if needed, e.g.:
+    // "VT323": 58,
+    // "Pixelify Sans": 62,
+};
+
 function preloadFonts() {
     const offscreenCanvas = document.createElement('canvas');
     offscreenCanvas.width = 1;
@@ -11,7 +19,8 @@ function preloadFonts() {
         "Orbitron", "Bungee", "Audiowide", "Geo", "Changa"
     ];
     fonts.forEach(font => {
-        ctx.font = `60px "${font}"`;
+        const fontSize = fontSizeAdjustments[font] || 60; // Default to 60px if no adjustment
+        ctx.font = `${fontSize}px "${font}"`;
         ctx.fillText("preload", 0, 0);
     });
 }
@@ -90,7 +99,8 @@ function generateText() {
     const sectionHeight = textAreaHeight / activeFonts.length;
 
     activeFonts.forEach((font, index) => {
-        ctx.font = `60px "${font}"`;
+        const fontSize = fontSizeAdjustments[font] || 60; // Use adjusted size or default to 60px
+        ctx.font = `${fontSize}px "${font}"`;
         ctx.imageSmoothingEnabled = false;
         ctx.fillStyle = selectedColor;
 
@@ -122,8 +132,8 @@ function generateText() {
         width: 100, 
         margin: 1,
         color: {
-            dark: selectedColor, // Use the selected color for the QR code
-            light: '#ffffff' // Keep the background white
+            dark: selectedColor,
+            light: '#ffffff'
         }
     }, (error) => {
         if (error) console.error(error);
