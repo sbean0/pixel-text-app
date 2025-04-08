@@ -118,7 +118,14 @@ function generateText() {
     const baseUrl = `${window.location.origin}${window.location.pathname}`;
     const qrUrl = `${baseUrl}mobile.html?fonts=${fontParam}&text=${textParam}&color=${colorParam}`;
     const qrCanvas = document.createElement('canvas');
-    QRCode.toCanvas(qrCanvas, qrUrl, { width: 100, margin: 1 }, (error) => {
+    QRCode.toCanvas(qrCanvas, qrUrl, { 
+        width: 100, 
+        margin: 1,
+        color: {
+            dark: selectedColor, // Use the selected color for the QR code
+            light: '#ffffff' // Keep the background white
+        }
+    }, (error) => {
         if (error) console.error(error);
         ctx.drawImage(qrCanvas, canvas.width - 110, 10);
     });
