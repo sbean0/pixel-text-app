@@ -131,7 +131,7 @@ function generateText() {
     const noteParam = customNote ? encodeURIComponent(btoa(customNote)) : '';
     const hideNoteParam = hideNote ? 'true' : 'false';
     const baseUrl = `${window.location.origin}${window.location.pathname}`;
-    const qrUrl = `${baseUrl}mobile.html?fonts=${fontParam}&text=${textParam}&color=${colorParam}¬e=${noteParam}&hideNote=${hideNoteParam}`;
+    const qrUrl = `${baseUrl}mobile.html?fonts=${fontParam}&text=${textParam}&color=${colorParam}&note=${noteParam}&hideNote=${hideNoteParam}`;
     const qrCanvas = document.createElement('canvas');
     QRCode.toCanvas(qrCanvas, qrUrl, { 
         width: 100, 
