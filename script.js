@@ -189,15 +189,27 @@ function addCustomFont() {
 
     if (customFontInput.startsWith('http://') || customFontInput.startsWith('https://')) {
         const fontName = `CustomFont_${Date.now()}`;
+        console.log(`Attempting to load font: ${fontName} from URL: ${customFontInput}`);
         const fontFace = new FontFace(fontName, `url(${customFontInput})`);
         fontFace.load().then(loadedFont => {
+            console.log(`Successfully loaded font: ${fontName}`);
             document.fonts.add(loadedFont);
+            // Preload the font on the canvas to ensure it's available
+            const offscreenCanvas = document.createElement('canvas');
+            offscreenCanvas.width = 1;
+            offscreenCanvas.height = 1;
+            const ctx = offscreenCanvas.getContext('2d');
+            ctx.font = `60px "${fontName}"`;
+            ctx.fillText("preload", 0, 0);
+            console.log(`Preloaded font on canvas: ${fontName}`);
             addFontToAvailableBox(fontName);
             addFontToBox(activeBox, fontName);
         }).catch(err => {
-            alert("Failed to load font from URL: " + err.message);
+            console.error(`Failed to load font from URL: ${customFontInput}`, err);
+            alert(`Failed to load font from URL: ${err.message}\nEnsure the URL points to a valid font file (e.g., TTF, WOFF, WOFF2) and supports CORS.\nExample: https://fonts.gstatic.com/s/roboto/v30/KFOmCnqEu92Fr1Mu4mxKKTU1Kg.woff2`);
         });
     } else {
+        console.log(`Adding font by name: ${customFontInput}`);
         addFontToAvailableBox(customFontInput);
         addFontToBox(activeBox, customFontInput);
     }
@@ -215,6 +227,7 @@ function addFontToAvailableBox(font) {
         fontItem.textContent = font;
         availableBox.appendChild(fontItem);
         allFonts.push(font);
+        console.log(`Added font to Available Fonts: ${font}`);
     }
 }
 
@@ -225,6 +238,7 @@ function addFontToBox(box, font) {
     fontItem.textContent = font;
     box.appendChild(fontItem);
     generateText();
+    console.log(`Added font to Active Fonts: ${font}`);
 }
 
 function downloadImage() {
