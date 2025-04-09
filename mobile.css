@@ -17,13 +17,6 @@ h1 {
     margin-bottom: 20px;
 }
 
-.reveal-hint {
-    margin: 10px 0;
-    font-size: 1em;
-    color: #007bff;
-    font-style: italic;
-}
-
 .custom-note {
     margin: 10px 0;
     font-size: 1em;
@@ -64,10 +57,6 @@ h1 {
 @media (max-width: 600px) {
     h1 {
         font-size: 1.2em;
-    }
-
-    .reveal-hint {
-        font-size: 0.9em;
     }
 
     .custom-note {

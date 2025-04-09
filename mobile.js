@@ -17,17 +17,10 @@ window.onload = function() {
     const previewDiv = document.getElementById('textPreview');
     const fontListDiv = document.getElementById('fontList');
     const customNoteDiv = document.getElementById('customNote');
-    const revealHintDiv = document.getElementById('revealHint');
     const showFontsBtn = document.getElementById('showFontsBtn');
     let isFontListVisible = false;
-    let tapCount = 0;
-    const tapsRequired = 3;
-    let shakeCount = 0;
-    const shakesRequired = 2;
-    let lastShake = 0;
-    const shakeThreshold = 15; // Acceleration threshold for a shake
-    const shakeTimeWindow = 1000; // Time window (ms) to count as separate shakes
-    let noteRevealed = false; // Track if the note has been revealed
+    let tapSequence = [];
+    let noteRevealed = false;
 
     let note = '';
     try {
@@ -43,63 +36,60 @@ window.onload = function() {
     if (!hideNote && note) {
         customNoteDiv.classList.add('visible');
         noteRevealed = true;
-    } else if (hideNote && note) {
-        revealHintDiv.style.display = 'block'; // Show the hint
     }
 
-    // Function to reveal the note
     function revealNote() {
         if (!noteRevealed) {
             customNoteDiv.classList.add('visible');
-            revealHintDiv.style.display = 'none'; // Hide the hint after revealing
             noteRevealed = true;
-            tapCount = 0; // Reset tap count
-            shakeCount = 0; // Reset shake count
+            tapSequence = [];
         }
     }
 
-    // Tap detection
     if (hideNote && note) {
         document.addEventListener('touchstart', (e) => {
-            if (noteRevealed) return; // Skip if note is already revealed
-            tapCount++;
-            console.log('Tap count:', tapCount);
-            if (tapCount >= tapsRequired) {
-                revealNote();
+            if (noteRevealed) return;
+
+            // Get the tap coordinates
+            const touch = e.touches[0];
+            const x = touch.clientX;
+            const y = touch.clientY;
+
+            // Get viewport dimensions
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+
+            // Determine the quadrant
+            const isRight = x > viewportWidth / 2;
+            const isBottom = y > viewportHeight / 2;
+            let quadrant;
+            if (isRight && !isBottom) {
+                quadrant = 'top-right';
+            } else if (isRight && isBottom) {
+                quadrant = 'bottom-right';
+            } else if (!isRight && isBottom) {
+                quadrant = 'bottom-left';
+            } else {
+                quadrant = 'top-left';
+            }
+
+            console.log(`Tap at (${x}, ${y}) - Quadrant: ${quadrant}`);
+
+            // Add the quadrant to the sequence
+            tapSequence.push(quadrant);
+
+            // Check the sequence
+            const requiredSequence = ['top-right', 'bottom-right', 'bottom-left'];
+            if (tapSequence.length === requiredSequence.length) {
+                const isCorrectSequence = tapSequence.every((tap, index) => tap === requiredSequence[index]);
+                if (isCorrectSequence) {
+                    revealNote();
+                } else {
+                    console.log('Incorrect tap sequence:', tapSequence);
+                    tapSequence = []; // Reset if the sequence is incorrect
+                }
             }
         });
-    }
-
-    // Shake detection
-    if (hideNote && note) {
-        if (window.DeviceMotionEvent) {
-            window.addEventListener('devicemotion', (e) => {
-                if (noteRevealed) return; // Skip if note is already revealed
-                const acceleration = e.accelerationIncludingGravity;
-                if (!acceleration) return;
-
-                const x = acceleration.x || 0;
-                const y = acceleration.y || 0;
-                const z = acceleration.z || 0;
-
-                // Calculate total acceleration
-                const totalAcceleration = Math.sqrt(x * x + y * y + z * z);
-
-                // Detect a shake based on acceleration threshold
-                const currentTime = Date.now();
-                if (totalAcceleration > shakeThreshold && (currentTime - lastShake) > shakeTimeWindow) {
-                    shakeCount++;
-                    lastShake = currentTime;
-                    console.log('Shake count:', shakeCount);
-
-                    if (shakeCount >= shakesRequired) {
-                        revealNote();
-                    }
-                }
-            });
-        } else {
-            console.warn('DeviceMotionEvent not supported. Note can still be revealed by tapping.');
-        }
     }
 
     fonts.forEach(font => {
