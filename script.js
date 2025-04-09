@@ -1,5 +1,5 @@
 const fontSizeAdjustments = {
-    "Press Start 2P": 48,
+    "Press Start 2P": 44, // Updated from 48 to 44
 };
 
 const allFonts = [
@@ -31,7 +31,17 @@ window.onload = function() {
 function setupDragAndDrop() {
     const containers = document.querySelectorAll('.available-fonts, .active-fonts');
     containers.forEach(container => {
-        container.addEventListener('dragover', e => e.preventDefault());
+        container.addEventListener('dragover', e => {
+            e.preventDefault();
+            const afterElement = getDragAfterElement(container, e.clientX);
+            const draggable = document.querySelector('.dragging');
+            if (afterElement == null) {
+                container.appendChild(draggable);
+            } else {
+                container.insertBefore(draggable, afterElement);
+            }
+        });
+
         container.addEventListener('drop', e => {
             e.preventDefault();
             const font = e.dataTransfer.getData('text/plain');
@@ -39,10 +49,21 @@ function setupDragAndDrop() {
             
             if (container.id === 'activeFonts') {
                 const currentFonts = container.querySelectorAll('.font-item').length;
-                if (currentFonts >= 6) {
-                    alert("Maximum of 6 fonts allowed in Active Fonts!");
+                const isFromActiveFonts = draggedElement && draggedElement.parentElement.id === 'activeFonts';
+
+                // If dragging within Active Fonts, reordering is handled by dragover
+                if (isFromActiveFonts) {
+                    generateText();
                     return;
                 }
+
+                // If dragging from Available Fonts, check the limit
+                if (currentFonts >= 7) { // Updated from 6 to 7
+                    alert("Maximum of 7 fonts allowed in Active Fonts!");
+                    return;
+                }
+
+                // Add the new font item
                 const fontItem = document.createElement('div');
                 fontItem.className = 'font-item';
                 fontItem.draggable = true;
@@ -78,6 +99,20 @@ function setupDragAndDrop() {
             e.target.classList.remove('dragging');
         }
     });
+
+    // Helper function to determine where to insert the dragged element
+    function getDragAfterElement(container, x) {
+        const draggableElements = [...container.querySelectorAll('.font-item:not(.dragging)')];
+        return draggableElements.reduce((closest, child) => {
+            const box = child.getBoundingClientRect();
+            const offset = x - box.left - box.width / 2;
+            if (offset < 0 && offset > closest.offset) {
+                return { offset: offset, element: child };
+            } else {
+                return closest;
+            }
+        }, { offset: Number.NEGATIVE_INFINITY }).element;
+    }
 }
 
 function generateText() {
@@ -131,7 +166,7 @@ function generateText() {
     const noteParam = customNote ? encodeURIComponent(btoa(customNote)) : '';
     const hideNoteParam = hideNote ? 'true' : 'false';
     const baseUrl = `${window.location.origin}${window.location.pathname}`;
-    const qrUrl = `${baseUrl}mobile.html?fonts=${fontParam}&text=${textParam}&color=${colorParam}&note=${noteParam}&hideNote=${hideNoteParam}`;
+    const qrUrl = `${baseUrl}mobile.html?fonts=${fontParam}&text=${textParam}&color=${colorParam}¬e=${noteParam}&hideNote=${hideNoteParam}`;
     const qrCanvas = document.createElement('canvas');
     QRCode.toCanvas(qrCanvas, qrUrl, { 
         width: 100, 
@@ -142,7 +177,7 @@ function generateText() {
         }
     }, (error) => {
         if (error) console.error(error);
-        ctx.drawImage(qrCanvas, canvas.width - 110, 10); // Adjusted for new width (1000 - 110 = 890)
+        ctx.drawImage(qrCanvas, canvas.width - 110, 10);
     });
 }
 
@@ -156,8 +191,8 @@ function addCustomFont() {
     const availableBox = document.getElementById('availableFonts');
     const activeBox = document.getElementById('activeFonts');
     const currentActiveFonts = activeBox.querySelectorAll('.font-item').length;
-    if (currentActiveFonts >= 6) {
-        alert("Maximum of 6 fonts allowed in Active Fonts! Remove one first.");
+    if (currentActiveFonts >= 7) { // Updated from 6 to 7
+        alert("Maximum of 7 fonts allowed in Active Fonts! Remove one first.");
         return;
     }
 

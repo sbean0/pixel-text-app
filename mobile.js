@@ -6,43 +6,102 @@ window.onload = function() {
     const encodedNote = urlParams.get('note') || '';
     const hideNote = urlParams.get('hideNote') === 'true';
 
+    console.log('URL Parameters:', {
+        fonts: fonts,
+        text: text,
+        color: color,
+        encodedNote: encodedNote,
+        hideNote: hideNote
+    });
+
     const previewDiv = document.getElementById('textPreview');
     const fontListDiv = document.getElementById('fontList');
     const customNoteDiv = document.getElementById('customNote');
+    const revealHintDiv = document.getElementById('revealHint');
     const showFontsBtn = document.getElementById('showFontsBtn');
     let isFontListVisible = false;
     let tapCount = 0;
     const tapsRequired = 3;
+    let shakeCount = 0;
+    const shakesRequired = 2;
+    let lastShake = 0;
+    const shakeThreshold = 15; // Acceleration threshold for a shake
+    const shakeTimeWindow = 1000; // Time window (ms) to count as separate shakes
+    let noteRevealed = false; // Track if the note has been revealed
 
-    // Decode the Base64-encoded note
     let note = '';
     try {
         note = encodedNote ? atob(decodeURIComponent(encodedNote)) : '';
     } catch (e) {
         console.error('Failed to decode note:', e);
-        note = ''; // Fallback to empty string if decoding fails
+        note = '';
     }
+    console.log('Decoded note:', note);
 
-    // Set the note content
     customNoteDiv.textContent = note ? `Note: ${note}` : '';
 
-    // Show the note if not hidden, otherwise wait for taps
     if (!hideNote && note) {
         customNoteDiv.classList.add('visible');
+        noteRevealed = true;
+    } else if (hideNote && note) {
+        revealHintDiv.style.display = 'block'; // Show the hint
     }
 
-    // Add tap event listener to reveal the note
-    document.addEventListener('touchstart', (e) => {
-        if (hideNote && note) {
-            tapCount++;
-            if (tapCount >= tapsRequired) {
-                customNoteDiv.classList.add('visible');
-                tapCount = 0;
-            }
+    // Function to reveal the note
+    function revealNote() {
+        if (!noteRevealed) {
+            customNoteDiv.classList.add('visible');
+            revealHintDiv.style.display = 'none'; // Hide the hint after revealing
+            noteRevealed = true;
+            tapCount = 0; // Reset tap count
+            shakeCount = 0; // Reset shake count
         }
-    });
+    }
 
-    // Display the text preview in each font
+    // Tap detection
+    if (hideNote && note) {
+        document.addEventListener('touchstart', (e) => {
+            if (noteRevealed) return; // Skip if note is already revealed
+            tapCount++;
+            console.log('Tap count:', tapCount);
+            if (tapCount >= tapsRequired) {
+                revealNote();
+            }
+        });
+    }
+
+    // Shake detection
+    if (hideNote && note) {
+        if (window.DeviceMotionEvent) {
+            window.addEventListener('devicemotion', (e) => {
+                if (noteRevealed) return; // Skip if note is already revealed
+                const acceleration = e.accelerationIncludingGravity;
+                if (!acceleration) return;
+
+                const x = acceleration.x || 0;
+                const y = acceleration.y || 0;
+                const z = acceleration.z || 0;
+
+                // Calculate total acceleration
+                const totalAcceleration = Math.sqrt(x * x + y * y + z * z);
+
+                // Detect a shake based on acceleration threshold
+                const currentTime = Date.now();
+                if (totalAcceleration > shakeThreshold && (currentTime - lastShake) > shakeTimeWindow) {
+                    shakeCount++;
+                    lastShake = currentTime;
+                    console.log('Shake count:', shakeCount);
+
+                    if (shakeCount >= shakesRequired) {
+                        revealNote();
+                    }
+                }
+            });
+        } else {
+            console.warn('DeviceMotionEvent not supported. Note can still be revealed by tapping.');
+        }
+    }
+
     fonts.forEach(font => {
         const textDiv = document.createElement('div');
         textDiv.className = 'text-item';
@@ -52,10 +111,8 @@ window.onload = function() {
         previewDiv.appendChild(textDiv);
     });
 
-    // Populate the font list (initially hidden)
     fontListDiv.textContent = fonts.length > 0 ? `Fonts used: ${fonts.join(', ')}` : 'No fonts specified';
 
-    // Toggle font list visibility on button click
     showFontsBtn.addEventListener('click', () => {
         isFontListVisible = !isFontListVisible;
         fontListDiv.style.display = isFontListVisible ? 'block' : 'none';
